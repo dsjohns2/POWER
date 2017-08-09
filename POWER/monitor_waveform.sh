@@ -1,8 +1,9 @@
 #!/bin/bash
 
-folder=$1
+for folder in "$@"
+do
+	run=${folder##*/}
+	./power.py $folder
+	./plot_monitor.py $run
+done
 
-run=${folder##*/}
-
-./power.py $folder
-./plot_monitor.py $run

@@ -392,3 +392,5 @@ for sim_path in paths:
 		radially_extrapolated_h_cross = np.append(radially_extrapolated_h_cross, radially_extrapolated_amp[i] * math.sin(radially_extrapolated_phase[i]))
 
 	np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_strain.dat", np.column_stack((t, radially_extrapolated_h_plus, radially_extrapolated_h_cross)))
+	np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_amplitude.dat", np.column_stack((t, radially_extrapolated_amp)))
+	np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_phase.dat", np.column_stack((t, radially_extrapolated_phase)))
