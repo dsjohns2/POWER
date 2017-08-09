@@ -240,14 +240,17 @@ def getCutoffFrequency(sim_name):
 
 #Initialize simulation data
 if(len(sys.argv) < 2):
-	print("Pass in the simulation folders and the number n of the n innermost detector radii to be used in the extrapolation (optional, default=all) (e.g., ./power.py ./simulations/J0040_N40 /path/to/my_simulation_folder 6).")
+	print("Pass in the number n of the n innermost detector radii to be used in the extrapolation (optional, default=all) and the simulation folders (e.g., ./power.py 6 ./simulations/J0040_N40 /path/to/my_simulation_folder).")
 	sys.exit()
-elif(os.path.isdir(sys.argv[-1])):
+elif(os.path.isdir(sys.argv[1])):
 	radiiUsedForExtrapolation = 7	#use the first n radii available  
 	paths = sys.argv[1:]
-elif(not os.path.isdir(sys.argv[-1])):
-	radiiUsedForExtrapolation = int(sys.argv[-1])	#use the first n radii available  
-	paths = sys.argv[1:-1]
+elif(not os.path.isdir(sys.argv[1])):
+	radiiUsedForExtrapolation = int(sys.argv[1])	#use the first n radii available  
+	if(radiiUsedForExtrapolation < 1 or radiiUsedForExtrapolation > 7):
+		print("Invalid specified radii number")
+		sys.exit()
+	paths = sys.argv[2:]
 
 for sim_path in paths:
 	main_dir = sim_path
