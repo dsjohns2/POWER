@@ -295,6 +295,12 @@ for sim_path in paths:
 	simdirs = main_dir+"/output-????/%s/" % (sim)
 	f0 = getCutoffFrequency(sim)
 
+	#Check if necessary files exist
+	par_file = main_dir+"/output-0000/%s.par" % (sim)
+	two_punctures_file = main_dir+"/output-0000/%s/TwoPunctures.bbh" % (sim)
+	if(not os.path.isfile(par_file) or not os.path.isfile(two_punctures_file)):
+		continue
+
 	#Create data directories
 	main_directory = "Extrapolated_Strain"
 	sim_dir = main_directory+"/"+sim
