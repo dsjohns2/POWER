@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Copyright (c) 2017 The Board of Trustees of the University of Illinois
 # All rights reserved.
