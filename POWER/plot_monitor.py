@@ -43,8 +43,8 @@ import sys
 
 run_name = sys.argv[1]
 
-python_strain = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_strain.dat")
-python_phase = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_phase.dat")
+python_strain = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_strain_l2_m2.dat")
+python_phase = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_phase_l2_m2.dat")
 py_t = python_strain[:, 0]
 py_hplus = python_strain[:, 1]
 py_phase = python_phase[:, 1]

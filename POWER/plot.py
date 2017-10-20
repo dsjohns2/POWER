@@ -43,9 +43,9 @@ import sys
 
 run_name = sys.argv[1]
 
-python_strain = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_strain.dat")
-python_phase = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_phase.dat")
-python_amp = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_amplitude.dat")
+python_strain = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_strain_l2_m2.dat")
+python_phase = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_phase_l2_m2.dat")
+python_amp = np.loadtxt("./Extrapolated_Strain/"+run_name+"/"+run_name+"_radially_extrapolated_amplitude_l2_m2.dat")
 py_t = python_strain[:, 0]
 py_hplus = python_strain[:, 1]
 py_phase = python_phase[:, 1]
@@ -60,7 +60,7 @@ plt.plot(py_t, py_hplus)
 plt.xlim((0,None))
 plt.ylabel('${\mathfrak{R}} [h(t)]$')
 plt.xlabel('Time [M]')
-plt.savefig("./Extrapolated_Strain/"+run_name+"/strain_plot.png")
+plt.savefig("./Extrapolated_Strain/"+run_name+"/strain_plot_l2_m2.png")
 plt.close()
 
 matplotlib.rcParams.update({'font.size': 12})
@@ -70,7 +70,7 @@ plt.plot(py_t, py_phase)
 plt.xlim((0,None))
 plt.ylabel('Phase')
 plt.xlabel('Time [M]')
-plt.savefig("./Extrapolated_Strain/"+run_name+"/phase_plot.png")
+plt.savefig("./Extrapolated_Strain/"+run_name+"/phase_plot_l2_m2.png")
 plt.close()
 
 matplotlib.rcParams.update({'font.size': 12})
@@ -80,5 +80,5 @@ plt.plot(py_t, py_amp)
 plt.xlim((0,None))
 plt.ylabel('Amplitude')
 plt.xlabel('Time [M]')
-plt.savefig("./Extrapolated_Strain/"+run_name+"/amplitude_plot.png")
+plt.savefig("./Extrapolated_Strain/"+run_name+"/amplitude_plot_l2_m2.png")
 plt.close()

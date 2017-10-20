@@ -319,120 +319,121 @@ for sim_path in paths:
 			if(line_elems[0] == "initial-ADM-energy"):
 				ADMMass = float(line_elems[-1])
 
-	#Get Psi4
-	radii = [100, 115, 136, 167, 214, 300, 500]
-	psi4dsetname_100 = 'l2_m2_r'+str(radii[0])+'.00'
-	psi4dsetname_115 = 'l2_m2_r'+str(radii[1])+'.00'
-	psi4dsetname_136 = 'l2_m2_r'+str(radii[2])+'.00'
-	psi4dsetname_167 = 'l2_m2_r'+str(radii[3])+'.00'
-	psi4dsetname_214 = 'l2_m2_r'+str(radii[4])+'.00'
-	psi4dsetname_300 = 'l2_m2_r'+str(radii[5])+'.00'
-	psi4dsetname_500 = 'l2_m2_r'+str(radii[6])+'.00'
-	mp_psi4_100 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_100)
-	mp_psi4_115 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_115)
-	mp_psi4_136 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_136)
-	mp_psi4_167 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_167)
-	mp_psi4_214 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_214)
-	mp_psi4_300 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_300)
-	mp_psi4_500 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_500)
-	mp_psi4_vars = [mp_psi4_100, mp_psi4_115, mp_psi4_136, mp_psi4_167, mp_psi4_214, mp_psi4_300, mp_psi4_500]
+	for m in [-2, -1, 0, 1, 2]:
+		#Get Psi4
+		radii = [100, 115, 136, 167, 214, 300, 500]
+		psi4dsetname_100 = 'l2_m'+str(m)+'_r'+str(radii[0])+'.00'
+		psi4dsetname_115 = 'l2_m'+str(m)+'_r'+str(radii[1])+'.00'
+		psi4dsetname_136 = 'l2_m'+str(m)+'_r'+str(radii[2])+'.00'
+		psi4dsetname_167 = 'l2_m'+str(m)+'_r'+str(radii[3])+'.00'
+		psi4dsetname_214 = 'l2_m'+str(m)+'_r'+str(radii[4])+'.00'
+		psi4dsetname_300 = 'l2_m'+str(m)+'_r'+str(radii[5])+'.00'
+		psi4dsetname_500 = 'l2_m'+str(m)+'_r'+str(radii[6])+'.00'
+		mp_psi4_100 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_100)
+		mp_psi4_115 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_115)
+		mp_psi4_136 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_136)
+		mp_psi4_167 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_167)
+		mp_psi4_214 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_214)
+		mp_psi4_300 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_300)
+		mp_psi4_500 = loadHDF5Series(simdirs+"mp_psi4.h5", psi4dsetname_500)
+		mp_psi4_vars = [mp_psi4_100, mp_psi4_115, mp_psi4_136, mp_psi4_167, mp_psi4_214, mp_psi4_300, mp_psi4_500]
 
-	#Get Tortoise Coordinate
-	tortoise = [None] * 7
-	for i in range(0, 7):
-		tortoise[i] = -RadialToTortoise(radii[i], ADMMass)
+		#Get Tortoise Coordinate
+		tortoise = [None] * 7
+		for i in range(0, 7):
+			tortoise[i] = -RadialToTortoise(radii[i], ADMMass)
 
-	strain = [None]*7
-	phase = [None]*7
-	amp = [None]*7
-	for i in range(0, 7):
-		#Get modified Psi4 (Multiply real and imaginary psi4 columns by radii and add the tortoise coordinate to the time colum)
-		mp_psi4_vars[i][:, 0] += tortoise[i]
-		mp_psi4_vars[i][:, 1] *= radii[i]
-		mp_psi4_vars[i][:, 2] *= radii[i]
+		strain = [None]*7
+		phase = [None]*7
+		amp = [None]*7
+		for i in range(0, 7):
+			#Get modified Psi4 (Multiply real and imaginary psi4 columns by radii and add the tortoise coordinate to the time colum)
+			mp_psi4_vars[i][:, 0] += tortoise[i]
+			mp_psi4_vars[i][:, 1] *= radii[i]
+			mp_psi4_vars[i][:, 2] *= radii[i]
 
-		#Fixed-frequency integration twice to get strain
-		hTable = psi4ToStrain(mp_psi4_vars[i], f0)
-		time = hTable[:, 0]
-		h = hTable[:, 1]
-		hplus = h.real
-		hcross = h.imag
-		newhTable = np.column_stack((time, hplus, hcross))
-		warnings.filterwarnings('ignore')
-		finalhTable = newhTable.astype(float)
-		np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_strain_at_"+str(radii[i])+".dat", finalhTable)
-		strain[i] = finalhTable
+			#Fixed-frequency integration twice to get strain
+			hTable = psi4ToStrain(mp_psi4_vars[i], f0)
+			time = hTable[:, 0]
+			h = hTable[:, 1]
+			hplus = h.real
+			hcross = h.imag
+			newhTable = np.column_stack((time, hplus, hcross))
+			warnings.filterwarnings('ignore')
+			finalhTable = newhTable.astype(float)
+			np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_strain_at_"+str(radii[i])+"_l2_m"+str(m)+".dat", finalhTable)
+			strain[i] = finalhTable
 
-		#Get phase and amplitude of strain
-		h_phase = np.unwrap(np.angle(h))
-		while(h_phase[0] < 0):
-			h_phase[:] += 2*math.pi
-		angleTable = np.column_stack((time, h_phase))
-		angleTable = angleTable.astype(float)
-		phase[i] = angleTable
-		h_amp = np.absolute(h)
-		ampTable = np.column_stack((time, h_amp))
-		ampTable = ampTable.astype(float)
-		amp[i] = ampTable
+			#Get phase and amplitude of strain
+			h_phase = np.unwrap(np.angle(h))
+			while(h_phase[0] < 0):
+				h_phase[:] += 2*math.pi
+			angleTable = np.column_stack((time, h_phase))
+			angleTable = angleTable.astype(float)
+			phase[i] = angleTable
+			h_amp = np.absolute(h)
+			ampTable = np.column_stack((time, h_amp))
+			ampTable = ampTable.astype(float)
+			amp[i] = ampTable
 
-	#Interpolate phase and amplitude
-	t = phase[0][:, 0]
-	last_t = phase[radiiUsedForExtrapolation - 1][-1, 0]
-	last_index = 0;
-	for i in range(0, len(phase[0][:, 0])):
-		if(t[i] > last_t):
-			last_index = i
-			break
-	last_index = last_index-1
-	t = phase[0][0:last_index, 0]
-	dts = t[1:] - t[:-1]
-	dt = float(np.amin(dts))
-	t = np.arange(phase[0][0, 0], phase[0][last_index, 0], dt)
-	interpolation_order = 9
-	for i in range(0, radiiUsedForExtrapolation):
-		interp_function = scipy.interpolate.interp1d(phase[i][:, 0], phase[i][:, 1], kind=interpolation_order)
-		resampled_phase_vals = interp_function(t)
-		while(resampled_phase_vals[0] < 0):
-			resampled_phase_vals[:] += 2*math.pi
-		phase[i] = np.column_stack((t, resampled_phase_vals))
-		interp_function = scipy.interpolate.interp1d(amp[i][:, 0], amp[i][:, 1], kind=interpolation_order)
-		resampled_amp_vals = interp_function(t)
-		amp[i] = np.column_stack((t, resampled_amp_vals))
+		#Interpolate phase and amplitude
+		t = phase[0][:, 0]
+		last_t = phase[radiiUsedForExtrapolation - 1][-1, 0]
+		last_index = 0;
+		for i in range(0, len(phase[0][:, 0])):
+			if(t[i] > last_t):
+				last_index = i
+				break
+		last_index = last_index-1
+		t = phase[0][0:last_index, 0]
+		dts = t[1:] - t[:-1]
+		dt = float(np.amin(dts))
+		t = np.arange(phase[0][0, 0], phase[0][last_index, 0], dt)
+		interpolation_order = 9
+		for i in range(0, radiiUsedForExtrapolation):
+			interp_function = scipy.interpolate.interp1d(phase[i][:, 0], phase[i][:, 1], kind=interpolation_order)
+			resampled_phase_vals = interp_function(t)
+			while(resampled_phase_vals[0] < 0):
+				resampled_phase_vals[:] += 2*math.pi
+			phase[i] = np.column_stack((t, resampled_phase_vals))
+			interp_function = scipy.interpolate.interp1d(amp[i][:, 0], amp[i][:, 1], kind=interpolation_order)
+			resampled_amp_vals = interp_function(t)
+			amp[i] = np.column_stack((t, resampled_amp_vals))
 
-	#Extrapolate
-	phase_extrapolation_order = 1
-	amp_extrapolation_order = 2
-	radii = np.asarray(radii, dtype=float)
-	radii = radii[0:radiiUsedForExtrapolation]
-	A_phase = np.power(radii, 0)
-	A_amp = np.power(radii, 0)
-	for i in range(1, phase_extrapolation_order+1):
-		A_phase = np.column_stack((A_phase, np.power(radii, -1*i)))
+		#Extrapolate
+		phase_extrapolation_order = 1
+		amp_extrapolation_order = 2
+		radii = np.asarray(radii, dtype=float)
+		radii = radii[0:radiiUsedForExtrapolation]
+		A_phase = np.power(radii, 0)
+		A_amp = np.power(radii, 0)
+		for i in range(1, phase_extrapolation_order+1):
+			A_phase = np.column_stack((A_phase, np.power(radii, -1*i)))
 
-	for i in range(1, amp_extrapolation_order+1):
-		A_amp = np.column_stack((A_amp, np.power(radii, -1*i)))
+		for i in range(1, amp_extrapolation_order+1):
+			A_amp = np.column_stack((A_amp, np.power(radii, -1*i)))
 
-	radially_extrapolated_phase = np.empty(0)
-	radially_extrapolated_amp = np.empty(0)
-	for i in range(0, len(t)):
-		b_phase = np.empty(0)
-		for j in range(0, radiiUsedForExtrapolation):
-			b_phase = np.append(b_phase, phase[j][i, 1])
-		x_phase = np.linalg.lstsq(A_phase, b_phase)[0]
-		radially_extrapolated_phase = np.append(radially_extrapolated_phase, x_phase[0])
+		radially_extrapolated_phase = np.empty(0)
+		radially_extrapolated_amp = np.empty(0)
+		for i in range(0, len(t)):
+			b_phase = np.empty(0)
+			for j in range(0, radiiUsedForExtrapolation):
+				b_phase = np.append(b_phase, phase[j][i, 1])
+			x_phase = np.linalg.lstsq(A_phase, b_phase)[0]
+			radially_extrapolated_phase = np.append(radially_extrapolated_phase, x_phase[0])
 
-		b_amp = np.empty(0)
-		for j in range(0, radiiUsedForExtrapolation):
-			b_amp = np.append(b_amp, amp[j][i, 1])
-		x_amp = np.linalg.lstsq(A_amp, b_amp)[0]
-		radially_extrapolated_amp = np.append(radially_extrapolated_amp, x_amp[0])
+			b_amp = np.empty(0)
+			for j in range(0, radiiUsedForExtrapolation):
+				b_amp = np.append(b_amp, amp[j][i, 1])
+			x_amp = np.linalg.lstsq(A_amp, b_amp)[0]
+			radially_extrapolated_amp = np.append(radially_extrapolated_amp, x_amp[0])
 
-	radially_extrapolated_h_plus = np.empty(0)
-	radially_extrapolated_h_cross = np.empty(0)
-	for i in range(0, len(radially_extrapolated_amp)):
-		radially_extrapolated_h_plus = np.append(radially_extrapolated_h_plus, radially_extrapolated_amp[i] * math.cos(radially_extrapolated_phase[i]))
-		radially_extrapolated_h_cross = np.append(radially_extrapolated_h_cross, radially_extrapolated_amp[i] * math.sin(radially_extrapolated_phase[i]))
+		radially_extrapolated_h_plus = np.empty(0)
+		radially_extrapolated_h_cross = np.empty(0)
+		for i in range(0, len(radially_extrapolated_amp)):
+			radially_extrapolated_h_plus = np.append(radially_extrapolated_h_plus, radially_extrapolated_amp[i] * math.cos(radially_extrapolated_phase[i]))
+			radially_extrapolated_h_cross = np.append(radially_extrapolated_h_cross, radially_extrapolated_amp[i] * math.sin(radially_extrapolated_phase[i]))
 
-	np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_strain.dat", np.column_stack((t, radially_extrapolated_h_plus, radially_extrapolated_h_cross)))
-	np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_amplitude.dat", np.column_stack((t, radially_extrapolated_amp)))
-	np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_phase.dat", np.column_stack((t, radially_extrapolated_phase)))
+		np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_strain_l2_m"+str(m)+".dat", np.column_stack((t, radially_extrapolated_h_plus, radially_extrapolated_h_cross)))
+		np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_amplitude_l2_m"+str(m)+".dat", np.column_stack((t, radially_extrapolated_amp)))
+		np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_phase_l2_m"+str(m)+".dat", np.column_stack((t, radially_extrapolated_phase)))
