@@ -40,6 +40,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import sys
+import os
 
 run_name = sys.argv[1]
 
@@ -51,34 +52,43 @@ py_hplus = python_strain[:, 1]
 py_phase = python_phase[:, 1]
 py_amp = python_amp[:, 1]
 
+cur_max_time = python_strain[0][0]
+cur_max_amp = abs(pow(python_strain[0][1], 2)) + abs(pow(python_strain[0][2], 2))
+for i in python_strain[:]:
+	cur_time = i[0]
+	cur_amp = abs(pow(i[1], 2)) + abs(pow(i[2], 2))
+	if(cur_amp>cur_max_amp):
+		cur_max_amp = cur_amp
+		cur_max_time = cur_time
+
 run_name_without_resolution = run_name.split("_")[0]
 
 matplotlib.rcParams.update({'font.size': 12})
 matplotlib.rcParams.update({'font.family': 'serif'})
 plt.title(run_name_without_resolution)
 plt.plot(py_t, py_hplus)
-plt.xlim((0,None))
+plt.xlim((0,cur_max_time+200))
 plt.ylabel('${\mathfrak{R}} [h(t)]$')
 plt.xlabel('Time [M]')
-plt.savefig("./Extrapolated_Strain/"+run_name+"/strain_plot_l2_m2.png")
+plt.savefig("./Extrapolated_Strain/"+run_name+"/"+run_name+"_strain_plot_l2_m2.png")
 plt.close()
 
 matplotlib.rcParams.update({'font.size': 12})
 matplotlib.rcParams.update({'font.family': 'serif'})
 plt.title(run_name_without_resolution)
 plt.plot(py_t, py_phase)
-plt.xlim((0,None))
+plt.xlim((0,cur_max_time+200))
 plt.ylabel('Phase')
 plt.xlabel('Time [M]')
-plt.savefig("./Extrapolated_Strain/"+run_name+"/phase_plot_l2_m2.png")
+plt.savefig("./Extrapolated_Strain/"+run_name+"/"+run_name+"_phase_plot_l2_m2.png")
 plt.close()
 
 matplotlib.rcParams.update({'font.size': 12})
 matplotlib.rcParams.update({'font.family': 'serif'})
 plt.title(run_name_without_resolution)
 plt.plot(py_t, py_amp)
-plt.xlim((0,None))
+plt.xlim((0,cur_max_time+200))
 plt.ylabel('Amplitude')
 plt.xlabel('Time [M]')
-plt.savefig("./Extrapolated_Strain/"+run_name+"/amplitude_plot_l2_m2.png")
+plt.savefig("./Extrapolated_Strain/"+run_name+"/"+run_name+"_amplitude_plot_l2_m2.png")
 plt.close()
