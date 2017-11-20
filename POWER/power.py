@@ -460,6 +460,16 @@ for sim_path in paths:
 				mp_psi4_vars[i][:, 1] *= radii[i]
 				mp_psi4_vars[i][:, 2] *= radii[i]
 
+				#Check for psi4 amplitude going to zero
+				cur_psi4_amp = (mp_psi4_vars[i][0, 1]**2 + mp_psi4_vars[i][0, 2]**2)**(1/2)
+				min_psi4_amp = cur_psi4_amp 
+				for j in range(0, len(mp_psi4_vars[i][:, 0])):
+					cur_psi4_amp = (mp_psi4_vars[i][j, 1]**2 + mp_psi4_vars[i][j, 2]**2)**(1/2)
+					if(cur_psi4_amp < min_psi4_amp):
+						min_psi4_amp = cur_psi4_amp
+				if(min_psi4_amp < np.finfo(float).eps and l >= 2):
+					print("The psi4 amplitude is near zero. The phase is ill-defined.")
+
 				#Fixed-frequency integration twice to get strain
 				hTable = psi4ToStrain(mp_psi4_vars[i], f0)
 				time = hTable[:, 0]
@@ -544,7 +554,7 @@ for sim_path in paths:
 
 			np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_strain_l"+str(l)+"_m"+str(m)+".dat", np.column_stack((t, radially_extrapolated_h_plus, radially_extrapolated_h_cross)))
 			np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_amplitude_l"+str(l)+"_m"+str(m)+".dat", np.column_stack((t, radially_extrapolated_amp)))
-			np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_phase_l"+str(l)+"_m"+str(m)+".dat", np.column_stack((t, -1*radially_extrapolated_phase[:])))
+			np.savetxt("./Extrapolated_Strain/"+sim+"/"+sim+"_radially_extrapolated_phase_l"+str(l)+"_m"+str(m)+".dat", np.column_stack((t, radially_extrapolated_phase[:])))
 
 	get_energy(sim)
 	get_angular_momentum(sim)
